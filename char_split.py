@@ -90,4 +90,4 @@ def test():
     
 if __name__ == '__main__':
     """ Print analysis of arg1 """
-    for x in split_compound(sys.argv[1]): print x
+    for x in split_compound(sys.argv[1]): print '\t'.join([unicode(y) for y in x])

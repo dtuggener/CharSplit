@@ -29,9 +29,9 @@ python char_split.py <word>
 Which outputs all possible splits, ranked by their score, e.g.
 ```
 python char_split.py Autobahnraststätte
-[0.8409656685402584, u'Autobahn', u'Rastst\xe4tte']
-[-0.5456885195896692, u'Auto', u'Bahnrastst\xe4tte']
-[-0.719082070992539, u'Autobahnrast', u'St\xe4tte']
+0.84096566854	Autobahn	Raststätte
+-0.54568851959	Auto	Bahnraststätte
+-0.719082070993	Autobahnrast	Stätte
 ...
 ```
 

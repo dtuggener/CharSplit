@@ -18,10 +18,8 @@ def parse_args():
     return parser.parse_args()
 
 
-def main():
+def main(input_file, output_file):
     # Dicts for counting the ngrams
-    args = parse_args()
-
     end_ngrams = defaultdict(int)
     start_ngrams = defaultdict(int)
     in_ngrams = defaultdict(int)
@@ -34,7 +32,7 @@ def main():
 
     # Gather counts
     print('Words analyzed of max.', str(max_words))
-    for line in open(args.input_file, 'r'):
+    for line in open(input_file, 'r'):
 
         line = line.strip().lower()
         if '-' in line:
@@ -73,7 +71,7 @@ def main():
     in_ngrams = {k: v/all_ngrams[k] for k,v in in_ngrams.items() if v > 1}
 
     # Write dicts to file
-    with open(args.output_file, "w") as f:
+    with open(output_file, "w") as f:
         json.dump({
             "prefix": start_ngrams,
             "infix": in_ngrams,
@@ -82,4 +80,5 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    args = parse_args()
+    main(args.input_file, args.output_file)

@@ -7,14 +7,15 @@ import re
 import sys
 import json
 
-# path to the datafile
-NGRAM_PATH = Path(__file__).parent / "ngram_probs.json"
-
 
 class Splitter:
     """
     Wrapper around the split_compound function
     """
+
+    # path to the datafile
+    NGRAM_PATH = Path(__file__).parent / "ngram_probs.json"
+
     def __init__(self):
         self.ngram_probs = None
 
@@ -25,7 +26,7 @@ class Splitter:
 
     def _get_ngram_probs(self):
         if self.ngram_probs is None:
-            self.ngram_probs = self._load_ngrams_from_file(NGRAM_PATH)
+            self.ngram_probs = self._load_ngrams_from_file(self.NGRAM_PATH)
         return self.ngram_probs
 
     def split_compound(self, word: str):
@@ -112,11 +113,3 @@ class Splitter:
                     print(line, split_result)
             if cases % 10000 == 0: print(' Accuracy (' + str(correct) + '/' + str(cases) + '): ', 100*correct/cases)
         print(' Accuracy (' + str(correct) + '/' + str(cases) + '): ', 100*correct/cases)
-
-#
-# if __name__ == '__main__':
-#     do_eval = False
-#     if do_eval:
-#         germanet_evaluation(print_errors=False)
-#     for x in split_compound(sys.argv[1]):
-#         print('\t'.join([str(y) for y in x]))

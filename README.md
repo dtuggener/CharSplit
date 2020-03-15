@@ -16,9 +16,9 @@ A model is provided, trained on 1 Mio. German nouns from Wikipedia.
 ### Usage ###
 **Train** a new model:
 ```bash
-training.py --input_file> --output_file
+training.py --input_file --output_file
 ```
-from command line, where `<your_train_file>` contains one word (noun) per line.
+from command line, where `input_file` contains one word (noun) per line.
 
 **Compound splitting**
 
@@ -27,11 +27,10 @@ In python
 ```python
 >> from charsplit import Splitter
 >> splitter = Splitter()
->> splitter.split_compound(<word>)
+>> splitter.split_compound("Autobahnraststätte")
 ```
 returns a list of all possible splits, ranked by their score, e.g.
 ```
->> splitter.split_compound("Autobahnraststätte")
 [[0.7945872450631273, 'Autobahn', 'Raststätte'], 
 [-0.7143290887876655, 'Auto', 'Bahnraststätte'], 
 [-1.1132332878581173, 'Autobahnrast', 'Stätte'], ...]

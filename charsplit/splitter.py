@@ -16,7 +16,8 @@ class Splitter:
     # path to the datafile
     NGRAM_PATH = Path(__file__).parent / "ngram_probs.json"
 
-    def __init__(self):
+    def __init__(self, ngram_path=NGRAM_PATH):
+        self.ngram_path = ngram_path
         self.ngram_probs = None
 
     @staticmethod
@@ -26,7 +27,7 @@ class Splitter:
 
     def _get_ngram_probs(self):
         if self.ngram_probs is None:
-            self.ngram_probs = self._load_ngrams_from_file(self.NGRAM_PATH)
+            self.ngram_probs = self._load_ngrams_from_file(self.ngram_path)
         return self.ngram_probs
 
     def split_compound(self, word: str):

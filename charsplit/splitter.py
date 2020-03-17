@@ -12,6 +12,7 @@ NGRAM_PATH = Path(__file__).parent / "ngram_probs.json"
 with open(NGRAM_PATH) as f:
     ngram_probs = json.load(f)
 
+
 class Splitter:
     """
     Wrapper around the split_compound function

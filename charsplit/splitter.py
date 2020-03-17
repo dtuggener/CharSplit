@@ -7,36 +7,20 @@ import re
 import sys
 import json
 
+NGRAM_PATH = Path(__file__).parent / "ngram_probs.json"
+
+with open(NGRAM_PATH) as f:
+    ngram_probs = json.load(f)
 
 class Splitter:
     """
     Wrapper around the split_compound function
     """
-
-    # path to the datafile
-    NGRAM_PATH = Path(__file__).parent / "ngram_probs.json"
-
-    def __init__(self, ngram_path=NGRAM_PATH):
-        self.ngram_path = ngram_path
-        self.ngram_probs = None
-
-    @staticmethod
-    def _load_ngrams_from_file(file_name: str):
-        with open(file_name) as f:
-            return json.load(f)
-
-    def _get_ngram_probs(self):
-        if self.ngram_probs is None:
-            self.ngram_probs = self._load_ngrams_from_file(self.ngram_path)
-        return self.ngram_probs
-
     def split_compound(self, word: str):
-        """
-        Return list of possible splits, best first
+        """Return list of possible splits, best first.
         :param word: Word to be split
         :return: List of all splits
         """
-
         word = word.lower()
 
         # If there is a hyphen in the word, return part of the word behind the last hyphen
@@ -58,8 +42,6 @@ class Splitter:
             pre_slice_prob = []
             in_slice_prob = []
             start_slice_prob = []
-
-            ngram_probs = self._get_ngram_probs()
 
             # Extract all ngrams
             for k in range(len(word)+1, 2, -1):
@@ -97,7 +79,7 @@ class Splitter:
         return sorted(scores, reverse = True)
 
     def germanet_evaluation(self, print_errors: bool=False):
-        """ Test on GermaNet compounds from http://www.sfs.uni-tuebingen.de/lsd/compounds.shtml """
+        """Test on GermaNet compounds from http://www.sfs.uni-tuebingen.de/lsd/compounds.shtml"""
         cases, correct = 0, 0
         for line in open('split_compounds_from_GermaNet13.0.txt','r').readlines()[2:]:
             cases += 1

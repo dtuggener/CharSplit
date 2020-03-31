@@ -31,9 +31,9 @@ In python
 ```
 returns a list of all possible splits, ranked by their score, e.g.
 ```python
-[[0.7945872450631273, 'Autobahn', 'Raststätte'], 
-[-0.7143290887876655, 'Auto', 'Bahnraststätte'], 
-[-1.1132332878581173, 'Autobahnrast', 'Stätte'], ...]
+[(0.7945872450631273, 'Autobahn', 'Raststätte'), 
+(-0.7143290887876655, 'Auto', 'Bahnraststätte'), 
+(-1.1132332878581173, 'Autobahnrast', 'Stätte'), ...]
 ```
 By default, `Splitter` uses the data from the file `charsplit/ngram_probs.json`. If you retrained the model, you may specify a custom file with
 ```python

@@ -18,29 +18,35 @@ def parse_args():
     return parser.parse_args()
 
 
-def main(input_file, output_file):
+def main(input_file: str, output_file: str, max_words: int = 10000000, max_len: int = 20) -> None:
+    """
+    Calculate ngram probabilities at different positions
+    :param input_file: List of words, one per line
+    :param output_file: JSON file where ngram probabilities are stored
+    :param max_words: Max. no. of words to analyse
+    :param max_len: Max. ngram length
+    :return: None
+    """
     # Dicts for counting the ngrams
     end_ngrams = defaultdict(int)
     start_ngrams = defaultdict(int)
     in_ngrams = defaultdict(int)
     all_ngrams = defaultdict(int)
 
-    # Counters and limits
-    c = 0   # Line counter
-    max_words = 10000000    # Words to consider
-    max_len = 20    # Maximum ngram length
-
     # Gather counts
     print('Words analyzed of max.', str(max_words))
-    for line in open(input_file, 'r'):
+    c = 0   # Line counter
 
+    for line in open(input_file, 'r'):
         line = line.strip().lower()
+
         if '-' in line:
             line = re.sub('.*-', '', line)  # Hyphen: take part following last hyphen
+
         line_middle = line[1:-1]
 
         for n in range(3, max_len+1):   # "Overcount" long words
-        #for n in range(3, len(line)+1):   # Lower performance
+        # for n in range(3, len(line)+1):   # Lower performance
 
             if n <= max_len:
                 ngram = line[:n]      # start_grams: max_len 3-5
@@ -61,8 +67,10 @@ def main(input_file, output_file):
             sys.stderr.write('\r'+str(c))
             sys.stderr.flush()
         c += 1
+
         if c == max_words:
             break
+
     sys.stderr.write('\n')
 
     print('Calculating ngrams probabilities')

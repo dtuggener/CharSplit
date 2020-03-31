@@ -26,7 +26,7 @@ class Splitter:
 
         # If there is a hyphen in the word, return part of the word behind the last hyphen
         if '-' in word:
-            return [[1., word.title(), re.sub('.*-', '', word.title())]]
+            return [[1., re.search('(.*)-', word.title()).group(1), re.sub('.*-', '', word.title())]]
 
         scores = [] # Score for each possible split position
         # Iterate through characters, start at forth character, go to 3rd last

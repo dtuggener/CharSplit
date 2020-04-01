@@ -50,11 +50,11 @@ class Splitter:
 
                 # Probability of first compound, given by its ending prob
                 if not pre_slice_prob and k <= len(pre_slice):
-                # The line above deviates from the description in the thesis;
-                # it takes the longest possible pre_slice instead of the one with max. probability.
-                # This increases accuracy on GermEval and increases speed.
-                # Use the line below to replicate the original implementation:
-                # if k <= len(pre_slice):
+                    # The line above deviates from the description in the thesis;
+                    # it only considers word[:n] as the pre_slice.
+                    # This improves accuracy on GermEval and increases speed.
+                    # Use the line below to replicate the original implementation:
+                    # if k <= len(pre_slice):
                     end_ngram = pre_slice[-k:]  # Look backwards
                     pre_slice_prob.append(ngram_probs["suffix"].get(end_ngram, -1))   # Punish unlikely pre_slice end_ngram
 
@@ -67,7 +67,6 @@ class Splitter:
                 # Remove the condition to restore the original implementation.
                 if not start_slice_prob:
                     ngram = word[n:n+k]
-
                     # Cut Fugen-S
                     if ngram.endswith('ts') or ngram.endswith('gs') or ngram.endswith('ks') \
                             or ngram.endswith('hls') or ngram.endswith('ns'):

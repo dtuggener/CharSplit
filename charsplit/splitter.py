@@ -7,11 +7,30 @@ from typing import List, Tuple
 import re
 import sys
 import json
+import math
 
 NGRAM_PATH = Path(__file__).parent / "ngram_probs.json"
 
 with open(NGRAM_PATH) as f:
     ngram_probs = json.load(f)
+
+
+def softmax(logits: List[float], temperature=1.0) -> List[float]:
+    exp_logits = [math.exp(x / temperature) for x in logits]
+
+    denom = sum(exp_logits)
+    return [x / denom for x in exp_logits]
+
+
+def weight_probs(inp: List[Tuple[float, int]]) -> float:
+    """
+    Weight probs using a softmax of ngram lengths
+    i. e. longer ngrams contribute more to the score
+    """
+    probs, weights = zip(*inp)
+    weights = softmax(weights, 4.0)  # temperature of 4 works well on GermaNet
+
+    return sum(prob * weight for prob, weight in zip(probs, weights))
 
 
 class Splitter:
@@ -49,23 +68,16 @@ class Splitter:
             for k in range(len(word)+1, 2, -1):
 
                 # Probability of first compound, given by its ending prob
-                if not pre_slice_prob and k <= len(pre_slice):
-                    # The line above deviates from the description in the thesis;
-                    # it only considers word[:n] as the pre_slice.
-                    # This improves accuracy on GermEval and increases speed.
-                    # Use the line below to replicate the original implementation:
-                    # if k <= len(pre_slice):
+                if k <= len(pre_slice):
                     end_ngram = pre_slice[-k:]  # Look backwards
-                    pre_slice_prob.append(ngram_probs["suffix"].get(end_ngram, -1))   # Punish unlikely pre_slice end_ngram
+                    pre_slice_prob.append((ngram_probs["suffix"].get(end_ngram, -1), len(end_ngram)))   # Punish unlikely pre_slice end_ngram
 
                 # Probability of ngram in word, if high, split unlikely
                 in_ngram = word[n:n+k]
                 in_slice_prob.append(ngram_probs["infix"].get(in_ngram, 1)) # Favor ngrams not occurring within words
 
                 # Probability of word starting
-                # The condition below deviates from the description in the thesis (see above comments);
-                # Remove the condition to restore the original implementation.
-                if not start_slice_prob:
+                if n + k <= len(word):
                     ngram = word[n:n+k]
                     # Cut Fugen-S
                     if ngram.endswith('ts') or ngram.endswith('gs') or ngram.endswith('ks') \
@@ -73,14 +85,15 @@ class Splitter:
                         if len(ngram[:-1]) > 2:
                             ngram = ngram[:-1]
 
-                    start_slice_prob.append(ngram_probs["prefix"].get(ngram, -1))
+                    start_slice_prob.append((ngram_probs["prefix"].get(ngram, -1), len(ngram)))
 
             if not pre_slice_prob or not start_slice_prob:
                 continue
 
-            start_slice_prob = max(start_slice_prob)
-            pre_slice_prob = max(pre_slice_prob)  # Highest, best pre_slice
+            start_slice_prob = weight_probs(start_slice_prob)
+            pre_slice_prob = weight_probs(pre_slice_prob)
             in_slice_prob = min(in_slice_prob)  # Lowest, punish splitting of good in_grams
+
             score = start_slice_prob - in_slice_prob + pre_slice_prob
             scores.append((score, word[:n].title(), word[n:].title()))
 
